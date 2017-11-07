@@ -9,14 +9,21 @@
       </div>
     </div>
     <div class="search-container">
+      <img class="search-icon" src="./../assets/search-icon.svg">
       <input type="text" placeholder="Search..." />
     </div>
+    <ProductsTable/>
   </div>
 </template>
 
 <script>
+import ProductsTable from './ProductsTable';
+
 export default {
-  name: 'HelloWorld',
+  name: 'ProductsPage',
+  components: {
+    ProductsTable,
+  },
   data() {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -32,7 +39,6 @@ export default {
   width: 900px;
   padding: 20px 40px;
   border: 1px solid #d6d6d6;
-  border-radius: 3px;
 }
 
 .header-container {
@@ -73,12 +79,23 @@ h1 {
 }
 
 .search-container {
+  position: relative;
+
+  .search-icon {
+    position: absolute;
+    top: 12px;
+    left: 30px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
+  }
+
   input {
     border: 1px solid #b7bec6;
     border-radius: 3px;
     height: 40px;
     line-height: 40px;
-    padding: 0 20px;
+    padding-left: 60px;
     font-size: 17px;
   }
 }
