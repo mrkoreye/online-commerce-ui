@@ -18,7 +18,7 @@
       <SelectDropdown class="items-per-page" :options="selectOptions" :selected="selectedOptionValue"></SelectDropdown>
     </div>
     <div class="current-page-container">
-      <SelectDropdown :options="selectOptions" :selected="selectedOptionValue"></SelectDropdown>
+      <SelectDropdown :options="pages" :selected="currentPage"></SelectDropdown>
     </div>
   </div>
 </div>
@@ -44,6 +44,22 @@ const SELECT_OPTIONS = [
   },
 ];
 
+const MOCK_PAGES = [
+  {
+    value: 1,
+    name: '1',
+  },
+  {
+    value: 2,
+    name: '2',
+  },
+  {
+    value: 3,
+    name: '3',
+  },
+];
+
+const MOCK_CURRENT_PAGE = MOCK_PAGES[0].value;
 const DEFAULT_SELECTED_ITEMS_PER_PAGE = SELECT_OPTIONS[1].value;
 
 export default {
@@ -58,8 +74,8 @@ export default {
       selectOptions: SELECT_OPTIONS,
       selectedOptionValue: DEFAULT_SELECTED_ITEMS_PER_PAGE,
       // mock the page logic for now
-      pages: [1, 2, 3],
-      currentPage: 1,
+      pages: MOCK_PAGES,
+      currentPage: MOCK_CURRENT_PAGE,
     };
   },
 };
@@ -96,7 +112,7 @@ th, td {
 
   &.caret::after {
     position: absolute;
-    top: 24px;
+    top: 20px;
     margin-left: 8px;
     content: '';
     width: 0;
