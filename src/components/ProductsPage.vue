@@ -33,6 +33,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~styles/variables';
+
 .products-page-container {
   position: relative;
   margin: 30px auto;
@@ -62,8 +64,8 @@ h1 {
 
 .button {
   display: inline-block;
-  border: 1px solid #b7bec6;
-  border-radius: 3px;
+  border: 1px solid $button-border-color;
+  border-radius: $border-radius;
   height: 40px;
   line-height: 40px;
   text-align: center;
@@ -72,9 +74,9 @@ h1 {
   margin: 0 7px;
 
   &.primary {
-    background: #0a5bfe;
+    background: $primary-blue;
     color: white;
-    border: 1px solid #0a5bfe;
+    border: 1px solid $primary-blue;
   }
 }
 
@@ -91,8 +93,8 @@ h1 {
   }
 
   input {
-    border: 1px solid #b7bec6;
-    border-radius: 3px;
+    border: 1px solid $button-border-color;
+    border-radius: $border-radius;
     height: 40px;
     line-height: 40px;
     padding-left: 60px;

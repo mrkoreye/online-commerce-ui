@@ -15,24 +15,34 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+@import '~styles/variables';
+
 #app {
   font-family: 'Lato', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #526173;
+  color: $base-font-color;
   font-size: 17px;;
 }
 
-input[type="checkbox"] {
+input[type=checkbox].checkbox {
+    position: relative; 
     -webkit-appearance: none;
     width: 18px;
     height: 18px;
-    border: 1px solid gray;
-    border-radius: 3px;
+    border: 1px solid $button-border-color;
+    border-radius: $border-radius;
     line-height: 18px;
     vertical-align: middle;
     cursor: pointer;
     text-align: center;
+
+    &:checked {
+      background-color: $primary-blue;
+      background-image: url('./assets/check-icon.png');
+      background-size: contain;
+      border: 1px solid $primary-blue;
+    }
 }
 </style>

@@ -1,4 +1,5 @@
-export const productData = 
+/* eslint-disable */
+const productData = 
   [
     {
       "id": 1,
@@ -96,4 +97,6 @@ export const productData =
       "inventory": 4,
       "thumbnail": "http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/11708126.png"
     }
-  ]
+  ];
+
+  export default productData;
