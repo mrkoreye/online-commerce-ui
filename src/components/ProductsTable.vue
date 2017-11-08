@@ -7,10 +7,26 @@
           class="checkbox" 
           type="checkbox" />
       </th>
-      <th class="name caret">Name</th>
-      <th class="caret">Type</th>
-      <th class="right caret">Price</th>
-      <th class="right caret">Inventory</th>
+      <th
+        @click="handleHeaderClick('name')" 
+        class="name caret">
+        Name
+      </th>
+      <th
+        @click="handleHeaderClick('type')"  
+        class="caret">
+        Type
+      </th>
+      <th
+        @click="handleHeaderClick('price')"  
+        class="right caret">
+        Price
+      </th>
+      <th
+        @click="handleHeaderClick('inventory')"  
+        class="right caret">
+        Inventory
+      </th>
     </tr>
     <ProductsTableRow 
       v-for="product in productsToDisplay" 
@@ -25,7 +41,7 @@
       <SelectDropdown 
         class="items-per-page" 
         :options="numProductsPerPageOptions" 
-        :change-event-name="numProductsPerPageEventName"
+        :change-event-name="events.names.productsPerPage"
         :selected="numProductsPerPage" />
     </div>
     <div class="current-page-container">
@@ -36,7 +52,7 @@
       </div>
       <SelectDropdown 
         :options="pageOptions"
-        :change-event-name="currentPageEventName"
+        :change-event-name="events.names.currentlySelectedPage"
         :selected="currentPage" />
       <div 
         :class="{ disabled: forwardButtonIsDisabled }" 
@@ -53,7 +69,7 @@ import chunk from 'lodash.chunk';
 
 import ProductsTableRow from './ProductsTableRow';
 import SelectDropdown from './SelectDropdown';
-import EventBus from './../event-bus';
+import Events from './../event-bus';
 
 const NUM_PRODUCTS_PER_PAGE_OPTIONS = [
   {
@@ -72,8 +88,6 @@ const NUM_PRODUCTS_PER_PAGE_OPTIONS = [
 
 const DEFAULT_CURRENT_PAGE = 1;
 const DEFAULT_SELECTED_ITEMS_PER_PAGE = NUM_PRODUCTS_PER_PAGE_OPTIONS[1].value;
-const NUM_PRODUCTS_PER_PAGE_EVENT_NAME = '$changedProductsPerPage';
-const CURRENT_PAGE_EVENT_NAME = '$currentPageEventName';
 
 export default {
   name: 'ProductsTable',
@@ -83,25 +97,26 @@ export default {
   },
   props: ['products'],
   mounted() {
-    EventBus.$on(this.numProductsPerPageEventName, (newValue) => {
+    this.events.bus.$on(this.events.names.productsPerPage, (newValue) => {
       this.numProductsPerPage = parseInt(newValue, 10);
     });
 
-    EventBus.$on(this.currentPageEventName, (newValue) => {
+    this.events.bus.$on(this.events.names.currentlySelectedPage, (newValue) => {
       this.currentPage = parseInt(newValue, 10);
     });
   },
   beforeDestroy() {
-    EventBus.$off(this.numProductsPerPageEventName);
-    EventBus.$off(this.currentPageEventName);
+    this.events.bus.$off(this.events.names.productsPerPage);
+    this.events.bus.$off(this.events.names.currentlySelectedPage);
   },
   data() {
     return {
       numProductsPerPageOptions: NUM_PRODUCTS_PER_PAGE_OPTIONS,
       numProductsPerPage: DEFAULT_SELECTED_ITEMS_PER_PAGE,
       currentPage: DEFAULT_CURRENT_PAGE,
-      numProductsPerPageEventName: NUM_PRODUCTS_PER_PAGE_EVENT_NAME,
-      currentPageEventName: CURRENT_PAGE_EVENT_NAME,
+      events: Events,
+      sortOrderCategory: 'name',
+      sortOrderIsAscending: true,
     };
   },
   computed: {
@@ -109,7 +124,7 @@ export default {
       return this.productPages[this.currentPage - 1];
     },
     productPages() {
-      return chunk(this.products, this.numProductsPerPage);
+      return chunk(this.sortedProducts, this.numProductsPerPage);
     },
     backButtonIsDisabled() {
       return this.currentPage === 1 || this.pageOptions.length === 1;
@@ -128,6 +143,31 @@ export default {
       }
 
       return pageOptions;
+    },
+    sortedProducts() {
+      const sortedProducts = this.products.sort((product1, product2) => {
+        const sortCriterion1 = product1[this.sortOrderCategory];
+        const sortCriterion2 = product2[this.sortOrderCategory];
+        let sortReturnNumber;
+
+        if (sortCriterion1 < sortCriterion2) {
+          sortReturnNumber = -1;
+        } else if (sortCriterion1 > sortCriterion2) {
+          sortReturnNumber = 1;
+        } else {
+          // The sort critera are equal
+          sortReturnNumber = 0;
+        }
+
+        if (!this.sortOrderIsAscending) {
+          // Reverse the sort order if the user wants descending instead of ascending
+          sortReturnNumber *= -1;
+        }
+
+        return sortReturnNumber;
+      });
+
+      return sortedProducts;
     },
   },
   watch: {
@@ -154,6 +194,15 @@ export default {
 
         this.currentPage += 1;
       }
+    },
+    handleHeaderClick(category) {
+      if (this.sortOrderCategory === category) {
+        this.sortOrderIsAscending = !this.sortOrderIsAscending;
+      } else {
+        this.sortOrderIsAscending = true;
+      }
+
+      this.sortOrderCategory = category;
     },
   },
 };

@@ -17,7 +17,7 @@
         type="text" 
         placeholder="Search..." />
     </div>
-    <ProductsTable :products="products" />
+    <ProductsTable :products="filteredProducts" />
   </div>
 </template>
 
@@ -39,7 +39,7 @@ export default {
     };
   },
   computed: {
-    products() {
+    filteredProducts() {
       const trimmedQueryInput = this.searchQuery
         .trim()
         .toLowerCase()
@@ -70,7 +70,7 @@ export default {
 
       // Consider debouncing searchQuery input
       // to prevent too much intense filtering
-      return productData.filter((product) => {
+      const filteredProducts = productData.filter((product) => {
         const productName = product.name &&
           product.name.toLowerCase().trim().normalize();
 
@@ -110,6 +110,8 @@ export default {
 
         return queryMatchesName && priceMatchesProduct;
       });
+
+      return filteredProducts;
     },
   },
 };

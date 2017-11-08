@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import EventBus from './../event-bus';
+import Events from './../event-bus';
 
 export default {
   name: 'SelectDropdown',
@@ -24,7 +24,7 @@ export default {
   ],
   methods: {
     handleChange(event) {
-      EventBus.$emit(this.changeEventName, event.target.value);
+      Events.bus.$emit(this.changeEventName, event.target.value);
     },
   },
 };

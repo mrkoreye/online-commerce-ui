@@ -3,5 +3,15 @@
 // the app is so small.
 import Vue from 'vue';
 
-const EventBus = new Vue();
-export default EventBus;
+class Events {
+  constructor() {
+    this.bus = new Vue();
+    this.names = {
+      changeSort: '$changedSort',
+      productsPerPage: '$changedProductsPerPage',
+      currentlySelectedPage: '$currentlySelectedPage',
+    };
+  }
+}
+
+export default new Events();
