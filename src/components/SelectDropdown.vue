@@ -1,6 +1,6 @@
 <template>
 <div class="select-container">
-  <select @change="changeCallback">
+  <select @change="handleChange">
     <option 
       v-for="option in options" 
       :key="option.value" 
@@ -13,13 +13,21 @@
 </template>
 
 <script>
+import EventBus from './../event-bus';
+
 export default {
   name: 'SelectDropdown',
   props: [
     'options',
     'selected',
-    'changeCallback',
+    'changeEventName',
   ],
+  methods: {
+    handleChange(event) {
+      EventBus.$emit(this.changeEventName, event.target.value);
+      console.log(this.selected);
+    },
+  },
 };
 </script>
 

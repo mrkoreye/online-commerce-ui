@@ -13,7 +13,7 @@
       <th class="right caret">Inventory</th>
     </tr>
     <ProductsTableRow 
-      v-for="product in products" 
+      v-for="product in productsToDisplay" 
       :key="product.id" 
       :product="product" />
   </table>
@@ -24,8 +24,10 @@
       </span>
       <SelectDropdown 
         class="items-per-page" 
-        :options="selectOptions" 
-        :selected="selectedOptionValue" />
+        another="hi"
+        :options="numProductsPerPageOptions" 
+        :change-event-name="numProductsPerPageEventName"
+        :selected="numProductsPerPage" />
     </div>
     <div class="current-page-container">
       <div 
@@ -49,6 +51,7 @@
 import ProductsTableRow from './ProductsTableRow';
 import SelectDropdown from './SelectDropdown';
 import productData from './../mock-data/products';
+import EventBus from './../event-bus';
 
 const SELECT_OPTIONS = [
   {
@@ -82,6 +85,7 @@ const MOCK_PAGES = [
 
 const MOCK_CURRENT_PAGE = MOCK_PAGES[0].value;
 const DEFAULT_SELECTED_ITEMS_PER_PAGE = SELECT_OPTIONS[1].value;
+const NUM_PRODUCTS_PER_PAGE_EVENT_NAME = '$changedProductsPerPage';
 
 export default {
   name: 'ProductsTable',
@@ -89,20 +93,36 @@ export default {
     ProductsTableRow,
     SelectDropdown,
   },
+  mounted() {
+    EventBus.$on(this.numProductsPerPageEventName, (newValue) => {
+      this.numProductsPerPage = newValue;
+    });
+  },
+  beforeDestroy() {
+    EventBus.$off(this.numProductsPerPageEventName);
+  },
   data() {
     return {
       products: productData,
-      selectOptions: SELECT_OPTIONS,
-      selectedOptionValue: DEFAULT_SELECTED_ITEMS_PER_PAGE,
+      numProductsPerPageOptions: SELECT_OPTIONS,
+      numProductsPerPage: DEFAULT_SELECTED_ITEMS_PER_PAGE,
       // mock the page logic for now
       pages: MOCK_PAGES,
       currentPage: MOCK_CURRENT_PAGE,
+      numProductsPerPageEventName: NUM_PRODUCTS_PER_PAGE_EVENT_NAME,
       updateCurrentPage(event) {
         if (event) {
           this.currentPage = event.target.value;
         }
       },
     };
+  },
+  computed: {
+    productsToDisplay() {
+      // const startingProductIndex = (this.currentPage * this.numProductsPerPage) - 1;
+      // return this.products.slice(startingProductIndex, this.numProductsPerPage);
+      return this.products.slice(0, this.numProductsPerPage);
+    },
   },
   methods: {
     paginate(direction) {
