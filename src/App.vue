@@ -28,7 +28,7 @@ export default {
 
 input[type=checkbox].checkbox {
     position: relative; 
-    -webkit-appearance: none;
+    appearance: none;
     width: 18px;
     height: 18px;
     border: 1px solid $button-border-color;
