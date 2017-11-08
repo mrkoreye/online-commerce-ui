@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <ProductsPage/>
+    <ProductsPage />
   </div>
 </template>
 
@@ -39,10 +39,10 @@ input[type=checkbox].checkbox {
     text-align: center;
 
     &:checked {
-      background-color: $primary-blue;
+      background-color: $primary-color;
       background-image: url('./assets/check-icon.png');
       background-size: contain;
-      border: 1px solid $primary-blue;
+      border: 1px solid $primary-color;
     }
 }
 </style>

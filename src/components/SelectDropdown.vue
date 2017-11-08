@@ -1,7 +1,12 @@
 <template>
 <div class="select-container">
-  <select>
-    <option v-for="option in options" :key="option.value" :selected="option.value === selected">{{ option.name }}</option>
+  <select @change="changeCallback">
+    <option 
+      v-for="option in options" 
+      :key="option.value" 
+      :selected="option.value === selected">
+      {{ option.name }}
+    </option>
   </select>
   <img src="./../assets/caret-dropdown-icon.png" />
 </div>
@@ -13,6 +18,7 @@ export default {
   props: [
     'options',
     'selected',
+    'changeCallback',
   ],
 };
 </script>

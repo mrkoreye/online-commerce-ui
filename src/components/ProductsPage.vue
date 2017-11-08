@@ -9,10 +9,14 @@
       </div>
     </div>
     <div class="search-container">
-      <img class="search-icon" src="./../assets/search-icon.svg">
-      <input type="text" placeholder="Search..." />
+      <img 
+        class="search-icon" 
+        src="./../assets/search-icon.svg">
+      <input 
+        type="text" 
+        placeholder="Search..." />
     </div>
-    <ProductsTable/>
+    <ProductsTable />
   </div>
 </template>
 
@@ -66,17 +70,17 @@ h1 {
   display: inline-block;
   border: 1px solid $button-border-color;
   border-radius: $border-radius;
-  height: 40px;
-  line-height: 40px;
+  height: $button-height;
+  line-height: $button-height;
   text-align: center;
   padding: 0 20px;
   cursor: pointer;
-  margin: 0 7px;
+  margin: 0 6px;
 
   &.primary {
-    background: $primary-blue;
+    background: $primary-color;
     color: white;
-    border: 1px solid $primary-blue;
+    border: 1px solid $primary-color;
   }
 }
 
@@ -95,8 +99,8 @@ h1 {
   input {
     border: 1px solid $button-border-color;
     border-radius: $border-radius;
-    height: 40px;
-    line-height: 40px;
+    height: $button-height;
+    line-height: $button-height;
     padding-left: 60px;
     font-size: 17px;
   }
