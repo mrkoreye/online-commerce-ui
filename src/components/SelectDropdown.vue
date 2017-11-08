@@ -25,7 +25,6 @@ export default {
   methods: {
     handleChange(event) {
       EventBus.$emit(this.changeEventName, event.target.value);
-      console.log(this.selected);
     },
   },
 };

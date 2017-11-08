@@ -24,21 +24,22 @@
       </span>
       <SelectDropdown 
         class="items-per-page" 
-        another="hi"
         :options="numProductsPerPageOptions" 
         :change-event-name="numProductsPerPageEventName"
         :selected="numProductsPerPage" />
     </div>
     <div class="current-page-container">
-      <div 
-        class="paginate-button back disabled"
+      <div
+        :class="{ disabled: backButtonIsDisabled }" 
+        class="paginate-button back"
         @click="paginate('back')">
       </div>
       <SelectDropdown 
-        :options="pages"
-        :changeCallback="updateCurrentPage"
+        :options="pageOptions"
+        :change-event-name="currentPageEventName"
         :selected="currentPage" />
       <div 
+        :class="{ disabled: forwardButtonIsDisabled }" 
         class="paginate-button forward"
         @click="paginate()">
       </div>
@@ -48,12 +49,13 @@
 </template>
 
 <script>
+import chunk from 'lodash.chunk';
+
 import ProductsTableRow from './ProductsTableRow';
 import SelectDropdown from './SelectDropdown';
-import productData from './../mock-data/products';
 import EventBus from './../event-bus';
 
-const SELECT_OPTIONS = [
+const NUM_PRODUCTS_PER_PAGE_OPTIONS = [
   {
     value: 5,
     name: '5',
@@ -68,24 +70,10 @@ const SELECT_OPTIONS = [
   },
 ];
 
-const MOCK_PAGES = [
-  {
-    value: 1,
-    name: '1',
-  },
-  {
-    value: 2,
-    name: '2',
-  },
-  {
-    value: 3,
-    name: '3',
-  },
-];
-
-const MOCK_CURRENT_PAGE = MOCK_PAGES[0].value;
-const DEFAULT_SELECTED_ITEMS_PER_PAGE = SELECT_OPTIONS[1].value;
+const DEFAULT_CURRENT_PAGE = 1;
+const DEFAULT_SELECTED_ITEMS_PER_PAGE = NUM_PRODUCTS_PER_PAGE_OPTIONS[1].value;
 const NUM_PRODUCTS_PER_PAGE_EVENT_NAME = '$changedProductsPerPage';
+const CURRENT_PAGE_EVENT_NAME = '$currentPageEventName';
 
 export default {
   name: 'ProductsTable',
@@ -93,35 +81,62 @@ export default {
     ProductsTableRow,
     SelectDropdown,
   },
+  props: ['products'],
   mounted() {
     EventBus.$on(this.numProductsPerPageEventName, (newValue) => {
-      this.numProductsPerPage = newValue;
+      this.numProductsPerPage = parseInt(newValue, 10);
+    });
+
+    EventBus.$on(this.currentPageEventName, (newValue) => {
+      this.currentPage = parseInt(newValue, 10);
     });
   },
   beforeDestroy() {
     EventBus.$off(this.numProductsPerPageEventName);
+    EventBus.$off(this.currentPageEventName);
   },
   data() {
     return {
-      products: productData,
-      numProductsPerPageOptions: SELECT_OPTIONS,
+      numProductsPerPageOptions: NUM_PRODUCTS_PER_PAGE_OPTIONS,
       numProductsPerPage: DEFAULT_SELECTED_ITEMS_PER_PAGE,
-      // mock the page logic for now
-      pages: MOCK_PAGES,
-      currentPage: MOCK_CURRENT_PAGE,
+      currentPage: DEFAULT_CURRENT_PAGE,
       numProductsPerPageEventName: NUM_PRODUCTS_PER_PAGE_EVENT_NAME,
-      updateCurrentPage(event) {
-        if (event) {
-          this.currentPage = event.target.value;
-        }
-      },
+      currentPageEventName: CURRENT_PAGE_EVENT_NAME,
     };
   },
   computed: {
     productsToDisplay() {
-      // const startingProductIndex = (this.currentPage * this.numProductsPerPage) - 1;
-      // return this.products.slice(startingProductIndex, this.numProductsPerPage);
-      return this.products.slice(0, this.numProductsPerPage);
+      return this.productPages[this.currentPage - 1];
+    },
+    productPages() {
+      return chunk(this.products, this.numProductsPerPage);
+    },
+    backButtonIsDisabled() {
+      return this.currentPage === 1 || this.pageOptions.length === 1;
+    },
+    forwardButtonIsDisabled() {
+      return this.currentPage === this.pageOptions.length;
+    },
+    pageOptions() {
+      const numPagesAllowed = this.productPages.length;
+      const pageOptions = [];
+      let currentPage = 1;
+
+      while (pageOptions.length !== numPagesAllowed) {
+        pageOptions.push({ value: currentPage, name: `${currentPage}` });
+        currentPage += 1;
+      }
+
+      return pageOptions;
+    },
+  },
+  watch: {
+    pageOptions(newPageOptions) {
+      const validCurrentPage = newPageOptions.find(option => option.value === this.currentPage);
+
+      if (!validCurrentPage) {
+        this.currentPage = DEFAULT_CURRENT_PAGE;
+      }
     },
   },
   methods: {
@@ -133,7 +148,7 @@ export default {
 
         this.currentPage -= 1;
       } else {
-        if (this.currentPage === this.pages.length) {
+        if (this.currentPage === this.pageOptions.length) {
           return;
         }
 
@@ -243,6 +258,7 @@ th, td {
 
   &.disabled {
     opacity: 0.3;
+    cursor: default;
   }
 }
 </style>

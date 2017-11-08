@@ -17,7 +17,7 @@
       {{ product.type }}
     </td>
     <td class="right">
-      {{ product.price }}
+      ${{ product.price }}
     </td>
     <td class="right">
       {{ product.inventory }}

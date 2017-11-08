@@ -12,16 +12,21 @@
       <img 
         class="search-icon" 
         src="./../assets/search-icon.svg">
-      <input 
+      <input
+        v-model="searchQuery" 
         type="text" 
         placeholder="Search..." />
     </div>
-    <ProductsTable />
+    <ProductsTable :products="products" />
   </div>
 </template>
 
 <script>
 import ProductsTable from './ProductsTable';
+import productData from './../mock-data/products';
+
+const WORD_REGEX = /\w+/g;
+const PRICE_REGEX = /\$\d+\.*\d*/g;
 
 export default {
   name: 'ProductsPage',
@@ -30,8 +35,82 @@ export default {
   },
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App',
+      searchQuery: '',
     };
+  },
+  computed: {
+    products() {
+      const trimmedQueryInput = this.searchQuery
+        .trim()
+        .toLowerCase()
+        .normalize();
+
+      // If no searchQuery, bypass any filtering
+      if (!trimmedQueryInput) {
+        return productData;
+      }
+
+      // Break the searchQuery input into individual words,
+      // and first remove any price data e.g. $34
+      const textData = trimmedQueryInput.replace(PRICE_REGEX, '').match(WORD_REGEX);
+
+      // Extract any price data (numbers prefixed with $)
+      // Requiring the user to use $ for price data allows for searching
+      // of products that have numbers in their name.
+      // Their are probably better ways to do this,
+      // but in order to keep this search algorithim relatively simple
+      // we are requring users to use $ to indicate price
+      const priceData = trimmedQueryInput.match(PRICE_REGEX);
+
+      // Bail and just return unfiltered product data if
+      // there is not valid info taken from the searchQuery
+      if (!textData && !priceData) {
+        return productData;
+      }
+
+      // Consider debouncing searchQuery input
+      // to prevent too much intense filtering
+      return productData.filter((product) => {
+        const productName = product.name &&
+          product.name.toLowerCase().trim().normalize();
+
+        // Convert product price to a whole number (round down), since most
+        // people think in terms of whole dollar amounts when searching
+        const productPriceRounded = Math.floor(product.price);
+
+        // Do not return product in query if it doesn't have a name or price
+        if (!productName || !productPriceRounded) {
+          return false;
+        }
+
+        let queryMatchesName = false;
+        let priceMatchesProduct = false;
+
+        if (textData) {
+          queryMatchesName = textData.every((substring) => {
+            const productNamePresent = productName.indexOf(substring) !== -1;
+            return productNamePresent;
+          });
+        } else {
+          // Set to true if there is not any textData to parse
+          queryMatchesName = true;
+        }
+
+        if (priceData) {
+          priceMatchesProduct = priceData.every((searchPrice) => {
+            const trimmedSearchPrice = searchPrice.replace('$', '');
+            const parsedPrice = Math.floor(parseInt(trimmedSearchPrice, 10));
+            const priceMatches = parsedPrice === productPriceRounded;
+            return priceMatches;
+          });
+        } else {
+          // Set to true if there is not any price data to parse
+          priceMatchesProduct = true;
+        }
+
+        return queryMatchesName && priceMatchesProduct;
+      });
+    },
   },
 };
 </script>
