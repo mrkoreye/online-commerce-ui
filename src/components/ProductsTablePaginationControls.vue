@@ -119,7 +119,7 @@ export default {
   span {
     display: inline-block;
     font-size: 15px;
-    margin-right: 5px;
+    margin-right: 10px;
   }
 }
 

@@ -39,7 +39,7 @@
       <ul>
         <li v-if="!validName">a name</li>
         <li v-if="!validPrice">a numerical price</li>
-        <li v-if="!validInventory">an inventory that is a whole number and greater than zero</li>
+        <li v-if="!validInventory">an inventory that is a whole number and greater than or equal to zero</li>
       </ul>
     </div>
     <div class="product-image-thumbnail"> 
@@ -48,6 +48,7 @@
     <input
       :class="{ error: showErrorMessage && !validName }" 
       class=" product-data name"
+      placeholder="Enter product name..."
       v-model.trim="editProduct.name" />
   </td>
   <td class="center type-dropdown">
@@ -129,75 +130,26 @@ export default {
     },
 
     showErrorMessage() {
-      return this.showErrorState && !(this.validName && this.validPrice && this.validInventory);
-    },
-  },
-
-  methods: {
-    enterEditMode() {
-      this.isEditMode = true;
+      return this.showErrorState && !this.noErrorsPresent;
     },
 
-    exitEditMode() {
-      if (this.verifyProductProperties()) {
-        this.events.bus.$emit(this.events.names.updateProduct, this.editProduct);
-        this.isEditMode = false;
-        this.showErrorState = false;
-      }
-    },
-
-    toggleEditMode() {
-      if (this.isEditMode) {
-        this.exitEditMode();
-      } else {
-        this.enterEditMode();
-      }
-    },
-
-    verifyProductProperties() {
-      const noErrors = this.validName && this.validPrice && this.validInventory;
-
-      if (noErrors) {
-        return true;
-      }
-
-      this.showErrorState = true;
-      this.isEditMode = true;
-      return false;
+    noErrorsPresent() {
+      return this.validName && this.validPrice && this.validInventory;
     },
   },
 
   watch: {
     // eslint-disable-next-line func-names
     'editProduct.name': function (newVal) {
-      if (!newVal) {
-        this.validName = false;
-      } else {
-        this.validName = true;
-      }
+      this.validName = this.isValidName(newVal);
     },
     // eslint-disable-next-line func-names
     'editProduct.price': function (newVal) {
-      if (typeof newVal === 'number') {
-        this.validPrice = true;
-      } else {
-        this.validPrice = false;
-      }
+      this.validPrice = this.isValidPrice(newVal);
     },
     // eslint-disable-next-line func-names
     'editProduct.inventory': function (newVal) {
-      const isNumber = typeof newVal === 'number';
-      let isValidInteger;
-
-      if (isNumber) {
-        isValidInteger = Number.isInteger(newVal) && (newVal >= 0);
-      }
-
-      if (isValidInteger) {
-        this.validInventory = true;
-      } else {
-        this.validInventory = false;
-      }
+      this.validInventory = this.isValidInventory(newVal);
     },
   },
 
@@ -214,14 +166,59 @@ export default {
       }
     });
 
+    // Set to edit mode if the parent tells us to.
+    // This is used in the AddProduct flow
     if (this.defaultToEditMode) {
       this.isEditMode = true;
     }
+
+    // Do an intial check to the product properties to make sure they are valid.
+    // It is mostly useful for the AddProduct flow
+    this.validName = this.isValidName(this.product.name);
+    this.validPrice = this.isValidPrice(this.product.price);
+    this.validInventory = this.isValidInventory(this.product.inventory);
   },
 
   beforeDestroy() {
     this.events.bus.$off(this.productTypeEventName);
     this.events.bus.$off(this.events.names.editAllProducts);
+  },
+
+  methods: {
+    isValidName(name) {
+      return name && (typeof name === 'string');
+    },
+
+    isValidPrice(price) {
+      return typeof price === 'number';
+    },
+
+    isValidInventory(inventory) {
+      const isNumber = typeof inventory === 'number';
+      return !!(isNumber && Number.isInteger(inventory) && (inventory >= 0));
+    },
+
+    enterEditMode() {
+      this.isEditMode = true;
+    },
+
+    exitEditMode() {
+      if (this.noErrorsPresent) {
+        this.events.bus.$emit(this.events.names.updateProduct, this.editProduct);
+        this.isEditMode = false;
+        this.showErrorState = false;
+      } else {
+        this.showErrorState = true;
+      }
+    },
+
+    toggleEditMode() {
+      if (this.isEditMode) {
+        this.exitEditMode();
+      } else {
+        this.enterEditMode();
+      }
+    },
   },
 };
 </script>

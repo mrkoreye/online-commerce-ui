@@ -47,7 +47,7 @@ const DEFAULT_CURRENT_PAGE = 1;
 const DEFAULT_SELECTED_ITEMS_PER_PAGE = 10;
 const DEFAULT_NEW_PRODUCT = {
   id: Date.now(),
-  name: 'ENTER NAME',
+  name: '',
   type: 'Physical',
   price: 0,
   inventory: 0,

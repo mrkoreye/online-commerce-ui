@@ -1,6 +1,6 @@
 # online-commerce-ui
 
-> The frontend for an online commerce site
+> The vue.js frontend for an online commerce site. It supports adding/editing products, sorting, front-end only searching, and pagination. Currently hooked up to a mock api.
 
 ## Build Setup
 

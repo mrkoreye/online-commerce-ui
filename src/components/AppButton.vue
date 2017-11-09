@@ -45,9 +45,9 @@ export default {
   height: $button-height;
   line-height: $button-height;
   text-align: center;
-  padding: 0 20px;
+  padding: 0 25px;
   cursor: pointer;
-  margin: 0 6px;
+  margin: 0 7px;
 
   &.primary {
     background: $primary-color;
