@@ -27,4 +27,11 @@ npm run e2e
 npm test
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Deployment
+This site is deployed to aws s3 [here](http://commerce-ui.korey.io). The deployment process invovles building the production files, minifying js/css/html, and uploading to an s3 bucket.
+Since this project was built using the `vue-cli`, the build process is built in. Yay! Run this command to build and deploy:
+```
+npm run deploy
+```
+
+For a detailed explanation on the cli template used in this project, visit [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

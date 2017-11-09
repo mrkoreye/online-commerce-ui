@@ -11,10 +11,12 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
+    "deploy": "npm run build && gulp upload:s3"
   },
   "dependencies": {
     "axios": "^0.17.0",
+    "gulp-s3-upload": "^1.6.6",
     "lodash.chunk": "^4.2.0",
     "normalize.css": "^7.0.0",
     "vue": "^2.5.2"
@@ -84,7 +86,8 @@
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.18.2",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "gulp": "3.9.1"
   },
   "engines": {
     "node": ">= 4.0.0",
