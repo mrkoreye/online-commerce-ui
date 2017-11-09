@@ -33,11 +33,16 @@
         Inventory
       </th>
     </tr>
+    <template v-if="productsToDisplay">
     <ProductsTableRow 
       v-for="(product, index) in productsToDisplay"
       :row-number="index"
       :key="product.id" 
       :product="product" />
+    </template>
+    <template v-else>
+      <div class="no-products">We did not find any matching products</div>
+    </template>
   </table>
   <div class="pagination-container">
     <div class="items-per-page-container">
@@ -296,6 +301,12 @@ th, td {
   .select-container {
     width: 90%;
   }
+}
+
+.no-products {
+  width: 900px;
+  text-align: center;
+  padding: 50px 0;
 }
 
 .pagination-container {
