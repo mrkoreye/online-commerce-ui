@@ -2,6 +2,12 @@
   <div class="products-page-container">
     <div class="header-container">
       <h1>Products</h1>
+      <div class="loader-container">
+        <div
+          v-if="isLoading"
+          class="loader">
+        </div>
+      </div>
       <div class="product-actions-container">
         <AppButton
           :click-event-name="events.names.clickExport"
@@ -30,9 +36,9 @@
 
 <script>
 import ProductsTable from './ProductsTable';
-import productData from './../mock-data/products';
 import Events from './../event-bus';
 import AppButton from './AppButton';
+import ProductApi from './../services/product-api';
 
 // Regex to capture word groups and use for searching
 const WORD_REGEX = /\w+/g;
@@ -55,8 +61,10 @@ export default {
   data() {
     return {
       searchQuery: '',
-      allProducts: productData,
+      allProducts: [],
       events: Events,
+      productApi: new ProductApi(),
+      isLoading: true,
     };
   },
 
@@ -92,11 +100,6 @@ export default {
         // people think in terms of whole dollar amounts when searching
         const productPriceRounded = Math.floor(product.price);
 
-        // Do not return product in query if it doesn't have a name or price
-        if (!productName || !productPriceRounded) {
-          return false;
-        }
-
         return this.queryMatchesName(productName) &&
           this.queryMatchesPrice(productPriceRounded);
       });
@@ -106,11 +109,27 @@ export default {
   },
 
   mounted() {
+    this.productApi.getAllProducts().then((response) => {
+      this.allProducts = response.data;
+      this.isLoading = false;
+    });
+
     this.events.bus.$on(this.events.names.updateProduct, (editProduct) => {
+      this.isLoading = true;
       const foundProduct = this.allProducts.find(product => product.id === editProduct.id);
 
       if (foundProduct) {
         Object.assign(foundProduct, editProduct);
+
+        this.productApi.updateProduct(foundProduct).then(() => {
+          this.isLoading = false;
+        });
+      } else {
+        this.allProducts.push(editProduct);
+        this.events.bus.$emit(this.events.names.newProductAdded);
+        this.productApi.createProduct(editProduct).then(() => {
+          this.isLoading = false;
+        });
       }
     });
   },
@@ -151,6 +170,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '~styles/variables';
+@import '~styles/loader';
 
 .products-page-container {
   position: relative;
@@ -199,5 +219,11 @@ h1 {
     padding-left: 60px;
     font-size: 17px;
   }
+}
+
+.loader-container {
+  position: absolute;
+  top: 16px;
+  left: 180px;
 }
 </style>

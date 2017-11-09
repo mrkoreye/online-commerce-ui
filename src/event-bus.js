@@ -17,6 +17,7 @@ class Events {
       clickImport: '$clickedImportButton',
       clickAddProduct: '$clickedAddProductButton',
       headerLabelClick: '$clickedHeaderLabel',
+      newProductAdded: '$newProductAdded',
     };
   }
 }

@@ -13,20 +13,20 @@ class ProductApi {
   }
 
   getAllProducts() {
-    this.axios.get(PRODUCTS_URL_BASE);
+    return this.axios.get(PRODUCTS_URL_BASE);
   }
 
   createProduct(product) {
-    this.axios.post(PRODUCTS_URL_BASE, product);
+    return this.axios.post(PRODUCTS_URL_BASE, product);
   }
 
   getProduct(id) {
-    this.axios.get(`${PRODUCT_URL_BASE + id}`);
+    return this.axios.get(`${PRODUCT_URL_BASE + id}`);
   }
 
   updateProduct(product) {
-    this.axios.put(`${PRODUCT_URL_BASE + product.id}`, product);
+    return this.axios.put(`${PRODUCT_URL_BASE + product.id}`, product);
   }
 }
 
-export default new ProductApi();
+export default ProductApi;

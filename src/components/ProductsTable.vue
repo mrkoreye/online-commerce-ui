@@ -5,11 +5,21 @@
       :sortOrderCategory="sortOrderCategory"
       :sortOrderIsAscending="sortOrderIsAscending" />
     <template v-if="productsToDisplay">
-    <ProductsTableRow 
-      v-for="(product, index) in productsToDisplay"
-      :row-number="index"
-      :key="product.id" 
-      :product="product" />
+    <tbody>
+      <transition name="slide-fade">
+        <ProductsTableRow
+          v-if="addNewProductMode"
+          :key="addNewProduct.id"
+          :product="addNewProduct"
+          :row-number="addNewProductRowNumber"
+          :default-to-edit-mode="addNewProductDefaultToEdit" />
+      </transition>
+      <ProductsTableRow 
+        v-for="(product, index) in productsToDisplay"
+        :row-number="index"
+        :key="product.id" 
+        :product="product" />
+    </tbody>
     </template>
     <template v-else>
     <div class="no-products">
@@ -35,6 +45,14 @@ import Events from './../event-bus';
 
 const DEFAULT_CURRENT_PAGE = 1;
 const DEFAULT_SELECTED_ITEMS_PER_PAGE = 10;
+const DEFAULT_NEW_PRODUCT = {
+  id: Date.now(),
+  name: 'ENTER NAME',
+  type: 'Physical',
+  price: 0,
+  inventory: 0,
+  thumbnail: 'http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/super-high-waisted-jeans-google-search-iozlcm0zk5j.png',
+};
 
 export default {
   name: 'ProductsTable',
@@ -55,6 +73,10 @@ export default {
       events: Events,
       sortOrderCategory: 'name',
       sortOrderIsAscending: true,
+      addNewProductMode: false,
+      addNewProductDefaultToEdit: true,
+      addNewProductRowNumber: -1,
+      addNewProduct: Object.assign({}, DEFAULT_NEW_PRODUCT),
     };
   },
 
@@ -136,11 +158,28 @@ export default {
       this.sortOrderCategory = newValues.sortOrderCategory;
       this.sortOrderIsAscending = newValues.sortOrderIsAscending;
     });
+
+    this.events.bus.$on(this.events.names.clickAddProduct, () => {
+      if (this.addNewProductMode) {
+        return;
+      }
+
+      this.addNewProduct = Object.assign({}, DEFAULT_NEW_PRODUCT);
+      this.addNewProduct.id = Date.now();
+      this.addNewProductMode = true;
+    });
+
+    this.events.bus.$on(this.events.names.newProductAdded, () => {
+      this.addNewProductMode = false;
+    });
   },
 
   beforeDestroy() {
     this.events.bus.$off(this.events.names.productsPerPage);
     this.events.bus.$off(this.events.names.currentlySelectedPage);
+    this.events.bus.$off(this.events.names.headerLabelClick);
+    this.events.bus.$off(this.events.names.clickAddProduct);
+    this.events.bus.$off(this.events.names.newProductAdded);
   },
 };
 </script>
@@ -163,5 +202,24 @@ table {
   width: 900px;
   text-align: center;
   padding: 50px 0;
+}
+
+.slide-fade-enter-active {
+  transition: all .2s ease-in-out;
+}
+.slide-fade-leave-active {
+  transition: all .2s ease-in-out;
+}
+.slide-fade-enter, 
+.slide-fade-leave-to {
+  opacity: 0;
+}
+
+.slide-fade-enter {
+  transform: translateX(30px);
+}
+
+.slide-fade-leave-to {
+  transform: translateX(-30px);
 }
 </style>

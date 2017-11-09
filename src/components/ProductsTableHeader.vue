@@ -1,36 +1,38 @@
 <template>
-<tr>
-  <th>
-    <input
-      @click="handleAllProductEdit"
-      class="checkbox" 
-      type="checkbox" />
-  </th>
-  <th
-    @click="handleHeaderClick('name')" 
-    :class="{ ascending: sortOrderCategory === 'name' && sortOrderIsAscending }"
-    class="name caret">
-    Name
-  </th>
-  <th
-    @click="handleHeaderClick('type')"
-    :class="{ ascending: sortOrderCategory === 'type' && sortOrderIsAscending }" 
-    class="center caret">
-    Type
-  </th>
-  <th
-    @click="handleHeaderClick('price')"
-    :class="{ ascending: sortOrderCategory === 'price' && sortOrderIsAscending }"
-    class="right caret">
-    Price
-  </th>
-  <th
-    @click="handleHeaderClick('inventory')"
-    :class="{ ascending: sortOrderCategory === 'inventory' && sortOrderIsAscending }"
-    class="right caret">
-    Inventory
-  </th>
-</tr>
+<thead>
+  <tr>
+    <th>
+      <input
+        @click="handleAllProductEdit"
+        class="checkbox" 
+        type="checkbox" />
+    </th>
+    <th
+      @click="handleHeaderClick('name')" 
+      :class="{ ascending: sortOrderCategory === 'name' && sortOrderIsAscending }"
+      class="name caret">
+      Name
+    </th>
+    <th
+      @click="handleHeaderClick('type')"
+      :class="{ ascending: sortOrderCategory === 'type' && sortOrderIsAscending }" 
+      class="center caret">
+      Type
+    </th>
+    <th
+      @click="handleHeaderClick('price')"
+      :class="{ ascending: sortOrderCategory === 'price' && sortOrderIsAscending }"
+      class="right caret">
+      Price
+    </th>
+    <th
+      @click="handleHeaderClick('inventory')"
+      :class="{ ascending: sortOrderCategory === 'inventory' && sortOrderIsAscending }"
+      class="right caret">
+      Inventory
+    </th>
+  </tr>
+</thead>
 </template>
 
 <script>

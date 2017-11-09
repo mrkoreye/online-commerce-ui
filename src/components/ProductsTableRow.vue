@@ -102,7 +102,11 @@ export default {
     },
 
     rowNumber: {
-      type: Number,
+      type: [Number, String],
+    },
+
+    defaultToEditMode: {
+      type: Boolean,
     },
   },
 
@@ -209,6 +213,10 @@ export default {
         this.exitEditMode();
       }
     });
+
+    if (this.defaultToEditMode) {
+      this.isEditMode = true;
+    }
   },
 
   beforeDestroy() {
