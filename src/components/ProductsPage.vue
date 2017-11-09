@@ -24,6 +24,7 @@
 <script>
 import ProductsTable from './ProductsTable';
 import productData from './../mock-data/products';
+import Events from './../event-bus';
 
 const WORD_REGEX = /\w+/g;
 const PRICE_REGEX = /\$\d+\.*\d*/g;
@@ -33,9 +34,23 @@ export default {
   components: {
     ProductsTable,
   },
+  mounted() {
+    this.events.bus.$on(this.events.names.updateProduct, (editProduct) => {
+      const foundProduct = this.allProducts.find(product => product.id === editProduct.id);
+
+      if (foundProduct) {
+        Object.assign(foundProduct, editProduct);
+      }
+    });
+  },
+  beforeDestroy() {
+    this.events.bus.$off(this.events.names.updateProduct);
+  },
   data() {
     return {
       searchQuery: '',
+      allProducts: productData,
+      events: Events,
     };
   },
   computed: {
@@ -47,7 +62,7 @@ export default {
 
       // If no searchQuery, bypass any filtering
       if (!trimmedQueryInput) {
-        return productData;
+        return this.allProducts;
       }
 
       // Break the searchQuery input into individual words,
@@ -65,12 +80,12 @@ export default {
       // Bail and just return unfiltered product data if
       // there is not valid info taken from the searchQuery
       if (!textData && !priceData) {
-        return productData;
+        return this.allProducts;
       }
 
       // Consider debouncing searchQuery input
       // to prevent too much intense filtering
-      const filteredProducts = productData.filter((product) => {
+      const filteredProducts = this.allProducts.filter((product) => {
         const productName = product.name &&
           product.name.toLowerCase().trim().normalize();
 

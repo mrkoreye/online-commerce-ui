@@ -3,27 +3,32 @@
   <table>
     <tr>
       <th>
-        <input 
+        <input
+          @click="handleAllProductEdit"
           class="checkbox" 
           type="checkbox" />
       </th>
       <th
         @click="handleHeaderClick('name')" 
+        :class="{ ascending: sortOrderCategory === 'name' && sortOrderIsAscending }"
         class="name caret">
         Name
       </th>
       <th
-        @click="handleHeaderClick('type')"  
-        class="caret">
+        @click="handleHeaderClick('type')"
+        :class="{ ascending: sortOrderCategory === 'type' && sortOrderIsAscending }" 
+        class="center caret">
         Type
       </th>
       <th
-        @click="handleHeaderClick('price')"  
+        @click="handleHeaderClick('price')"
+        :class="{ ascending: sortOrderCategory === 'price' && sortOrderIsAscending }"
         class="right caret">
         Price
       </th>
       <th
-        @click="handleHeaderClick('inventory')"  
+        @click="handleHeaderClick('inventory')"
+        :class="{ ascending: sortOrderCategory === 'inventory' && sortOrderIsAscending }"
         class="right caret">
         Inventory
       </th>
@@ -204,6 +209,9 @@ export default {
 
       this.sortOrderCategory = category;
     },
+    handleAllProductEdit(event) {
+      this.events.bus.$emit(this.events.names.editAllProducts, event.target.checked);
+    },
   },
 };
 </script>
@@ -215,6 +223,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  table-layout: fixed;
 }
 
 th {
@@ -222,6 +231,10 @@ th {
   font-weight: normal;
   text-align: left;
   cursor: pointer;
+
+  &.name {
+    padding-left: 10px;
+  }
 }
 
 th, td {
@@ -231,10 +244,21 @@ th, td {
 
   &.right {
     text-align: right;
+    width: 120px;
+  }
+
+  &.center {
+    text-align: right;
+    width: 105px;
+    padding-right: 30px;
+
+    &.caret {
+      padding-right: 50px;
+    }
   }
 
   &.name {
-    width: 50%;
+    width: 42%;
   }
 
   &.caret::after {
@@ -247,10 +271,16 @@ th, td {
     border-left: 4px solid transparent;
     border-right: 4px solid transparent;
     border-top: 5px solid #A9B2BB;
+    border-bottom: 0;
+  }
+
+  &.caret.ascending::after {
+    transform: rotate(180deg);
   }
 
   &:first-child {
     text-align: center;
+    margin: 0 10px;
 
     &::after {
       border: 0;
@@ -260,6 +290,10 @@ th, td {
   &:last-child {
     padding-right: 80px;
     width: 22%;
+  }
+
+  .select-container {
+    width: 90%;
   }
 }
 
@@ -286,6 +320,7 @@ th, td {
 
 .paginate-button {
   display: inline-block;
+  margin: 0 5px;
   border-radius: $border-radius;
   border: 1px solid $button-border-color;
   background-image: url('./../assets/caret-dropdown-icon.png');

@@ -36,13 +36,13 @@ export default {
 .select-container {
   position: relative;
   display: inline-block;
-  margin: 0 5px;
   border: 1px solid $button-border-color;
   min-width: 80px;
   border-radius: $border-radius;
   overflow: hidden;
   text-align: left;
   vertical-align: middle;
+  background-color: white;
 
   img {
     position: absolute;
@@ -51,12 +51,10 @@ export default {
     top: 10px;
     right: 14px;
     opacity: 0.6;
-    // Sort of a hack, but I'm using a negative z-index here
-    // so that the caret renders below the transparent select element
-    z-index: -1;
   }
 
   select {
+    position: relative;
     width: 100%;
     font-size: 16px;
     padding: 7px 12px;
@@ -67,6 +65,7 @@ export default {
     background-image: none;
     appearance: none;
     background-color: transparent;
+    z-index: 1;
 
     option {
       font-weight: normal;

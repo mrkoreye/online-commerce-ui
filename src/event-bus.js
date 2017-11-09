@@ -10,6 +10,9 @@ class Events {
       changeSort: '$changedSort',
       productsPerPage: '$changedProductsPerPage',
       currentlySelectedPage: '$currentlySelectedPage',
+      updateProduct: '$updatedProduct',
+      editAllProducts: '$editAllProducts',
+      changeTypeOfProduct: '$changeTypeOfProduct',
     };
   }
 }
