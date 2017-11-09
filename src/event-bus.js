@@ -13,6 +13,10 @@ class Events {
       updateProduct: '$updatedProduct',
       editAllProducts: '$editAllProducts',
       changeTypeOfProduct: '$changeTypeOfProduct',
+      clickExport: '$clickedExportButton',
+      clickImport: '$clickedImportButton',
+      clickAddProduct: '$clickedAddProductButton',
+      headerLabelClick: '$clickedHeaderLabel',
     };
   }
 }

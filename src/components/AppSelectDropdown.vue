@@ -16,12 +16,21 @@
 import Events from './../event-bus';
 
 export default {
-  name: 'SelectDropdown',
-  props: [
-    'options',
-    'selected',
-    'changeEventName',
-  ],
+  name: 'AppSelectDropdown',
+  props: {
+    options: {
+      type: Array,
+    },
+
+    selected: {
+      type: [String, Number],
+    },
+
+    changeEventName: {
+      type: String,
+    },
+  },
+
   methods: {
     handleChange(event) {
       Events.bus.$emit(this.changeEventName, event.target.value);

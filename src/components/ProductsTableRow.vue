@@ -1,82 +1,82 @@
 <template>
-  <tr :class="{ editing: isEditMode }">
-    <td>
+<tr :class="{ editing: isEditMode }">
+  <td>
+    <input
+      @click="toggleEditMode"
+      :checked="isEditMode"
+      :disabled="showErrorMessage"
+      class="checkbox" 
+      type="checkbox" />
+  </td>
+  <template v-if="!isEditMode">
+  <td>
+    <div class="product-image-thumbnail"> 
+      <img :src="product.thumbnail" />
+    </div>
+    <span class="product-name">
+      {{ product.name }}
+    </span>
+  </td>
+  <td class="center">
+    {{ product.type }}
+  </td>
+  <td class="right">
+    ${{ product.price }}
+  </td>
+  <td 
+    :class="{ zero: product.inventory === 0 }"
+    class="inventory right">
+    {{ product.inventory }}
+  </td>
+  </template>
+  <template v-else>
+  <td>
+    <div
+      v-if="showErrorMessage"
+      :style="{ 'z-index': 1000 - rowNumber }"
+      class="error-state-container">
+      To be valid, products must have:
+      <ul>
+        <li v-if="!validName">a name</li>
+        <li v-if="!validPrice">a numerical price</li>
+        <li v-if="!validInventory">an inventory that is a whole number and greater than zero</li>
+      </ul>
+    </div>
+    <div class="product-image-thumbnail"> 
+      <img :src="editProduct.thumbnail" />
+    </div>
+    <input
+      :class="{ error: showErrorMessage && !validName }" 
+      class=" product-data name"
+      v-model.trim="editProduct.name" />
+  </td>
+  <td class="center type-dropdown">
+    <AppSelectDropdown 
+      :options="productTypeOptions"
+      :change-event-name="productTypeEventName"
+      :selected="editProduct.type" />
+  </td>
+  <td class="right">
+    <div class="money-input-container">
+      <span class="money-sign">$</span>
       <input
-        @click="toggleEditMode"
-        :checked="isEditMode"
-        :disabled="showErrorMessage"
-        class="checkbox" 
-        type="checkbox" />
-    </td>
-    <template v-if="!isEditMode">
-    <td>
-      <div class="product-image-thumbnail"> 
-        <img :src="product.thumbnail" />
-      </div>
-      <span class="product-name">
-        {{ product.name }}
-      </span>
-    </td>
-    <td class="center">
-      {{ product.type }}
-    </td>
-    <td class="right">
-      ${{ product.price }}
-    </td>
-    <td 
-      :class="{ zero: product.inventory === 0 }"
-      class="inventory right">
-      {{ product.inventory }}
-    </td>
-    </template>
-    <template v-else>
-    <td>
-      <div
-        v-if="showErrorMessage"
-        :style="{ 'z-index': 1000 - rowNumber }"
-        class="error-state-container">
-        To be valid, products must have:
-        <ul>
-          <li v-if="!validName">a name</li>
-          <li v-if="!validPrice">a numerical price</li>
-          <li v-if="!validInventory">an inventory that is a whole number and greater than zero</li>
-        </ul>
-      </div>
-      <div class="product-image-thumbnail"> 
-        <img :src="editProduct.thumbnail" />
-      </div>
-      <input
-        :class="{ error: showErrorMessage && !validName }" 
-        class=" product-data name"
-        v-model.trim="editProduct.name" />
-    </td>
-    <td class="center">
-      <SelectDropdown 
-        :options="productTypeOptions"
-        :change-event-name="productTypeEventName"
-        :selected="editProduct.type" />
-    </td>
-    <td class="right">
-      <div class="money-input-container">
-        <span class="money-sign">$</span>
-        <input
-          :class="{ error: showErrorMessage && !validPrice }"
-          class="product-data right-align money"
-          v-model.number="editProduct.price" />
-      </div>
-    </td>
-    <td class="right">
-      <input
-        :class="{ error: showErrorMessage && !validInventory }"
-        class="product-data right-align"
-        v-model.number="editProduct.inventory" />
-    </td>
-    </template>
-  </tr>
+        :class="{ error: showErrorMessage && !validPrice }"
+        class="product-data right-align money"
+        v-model.number="editProduct.price" />
+    </div>
+  </td>
+  <td class="right">
+    <input
+      :class="{ error: showErrorMessage && !validInventory }"
+      class="product-data right-align"
+      v-model.number="editProduct.inventory" />
+  </td>
+  </template>
+</tr>
 </template>
 
 <script>
-import SelectDropdown from './../components/SelectDropdown';
+import AppSelectDropdown from './../components/AppSelectDropdown';
 import Events from './../event-bus';
 
 const PRODUCT_TYPE_OPTIONS = [
@@ -92,26 +92,20 @@ const PRODUCT_TYPE_OPTIONS = [
 
 export default {
   name: 'ProductsTableRow',
-  props: [
-    'product',
-    'rowNumber',
-  ],
   components: {
-    SelectDropdown,
+    AppSelectDropdown,
   },
-  mounted() {
-    this.events.bus.$on(this.productTypeEventName, (type) => {
-      this.editProduct.type = type;
-    });
 
-    this.events.bus.$on(this.events.names.editAllProducts, (checked) => {
-      if (checked) {
-        this.enterEditMode();
-      } else {
-        this.exitEditMode();
-      }
-    });
+  props: {
+    product: {
+      type: Object,
+    },
+
+    rowNumber: {
+      type: Number,
+    },
   },
+
   data() {
     return {
       isEditMode: false,
@@ -124,18 +118,22 @@ export default {
       showErrorState: false,
     };
   },
+
   computed: {
     productTypeEventName() {
       return `${this.events.names.changeTypeOfProduct}-${this.editProduct.id}`;
     },
+
     showErrorMessage() {
       return this.showErrorState && !(this.validName && this.validPrice && this.validInventory);
     },
   },
+
   methods: {
     enterEditMode() {
       this.isEditMode = true;
     },
+
     exitEditMode() {
       if (this.verifyProductProperties()) {
         this.events.bus.$emit(this.events.names.updateProduct, this.editProduct);
@@ -143,6 +141,7 @@ export default {
         this.showErrorState = false;
       }
     },
+
     toggleEditMode() {
       if (this.isEditMode) {
         this.exitEditMode();
@@ -150,6 +149,7 @@ export default {
         this.enterEditMode();
       }
     },
+
     verifyProductProperties() {
       const noErrors = this.validName && this.validPrice && this.validInventory;
 
@@ -162,6 +162,7 @@ export default {
       return false;
     },
   },
+
   watch: {
     // eslint-disable-next-line func-names
     'editProduct.name': function (newVal) {
@@ -194,6 +195,25 @@ export default {
         this.validInventory = false;
       }
     },
+  },
+
+  mounted() {
+    this.events.bus.$on(this.productTypeEventName, (type) => {
+      this.editProduct.type = type;
+    });
+
+    this.events.bus.$on(this.events.names.editAllProducts, (checked) => {
+      if (checked) {
+        this.enterEditMode();
+      } else {
+        this.exitEditMode();
+      }
+    });
+  },
+
+  beforeDestroy() {
+    this.events.bus.$off(this.productTypeEventName);
+    this.events.bus.$off(this.events.names.editAllProducts);
   },
 };
 </script>
@@ -286,7 +306,11 @@ export default {
       width: 60%;
     }
   }
+
+  .type-dropdown /deep/ {
+    .select-container {
+      width: 90%;
+    }
+  }
 }
-
-
 </style>
