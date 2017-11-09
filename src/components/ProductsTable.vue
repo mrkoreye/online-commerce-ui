@@ -42,17 +42,7 @@ import AppSelectDropdown from './AppSelectDropdown';
 import ProductsTablePaginationControls from './ProductsTablePaginationControls';
 import ProductsTableHeader from './ProductsTableHeader';
 import Events from './../event-bus';
-
-const DEFAULT_CURRENT_PAGE = 1;
-const DEFAULT_SELECTED_ITEMS_PER_PAGE = 10;
-const DEFAULT_NEW_PRODUCT = {
-  id: Date.now(),
-  name: '',
-  type: 'Physical',
-  price: 0,
-  inventory: 0,
-  thumbnail: 'http://frontend-trial-project.weebly.com/uploads/1/0/5/4/105462933/super-high-waisted-jeans-google-search-iozlcm0zk5j.png',
-};
+import config from './../config';
 
 export default {
   name: 'ProductsTable',
@@ -68,15 +58,15 @@ export default {
 
   data() {
     return {
-      numProductsPerPage: DEFAULT_SELECTED_ITEMS_PER_PAGE,
-      currentPage: DEFAULT_CURRENT_PAGE,
+      numProductsPerPage: config.DEFAULT_SELECTED_ITEMS_PER_PAGE,
+      currentPage: config.DEFAULT_CURRENT_PAGE,
       events: Events,
       sortOrderCategory: 'name',
       sortOrderIsAscending: true,
       addNewProductMode: false,
       addNewProductDefaultToEdit: true,
       addNewProductRowNumber: -1,
-      addNewProduct: Object.assign({}, DEFAULT_NEW_PRODUCT),
+      addNewProduct: Object.assign({}, config.DEFAULT_NEW_PRODUCT),
     };
   },
 
@@ -104,9 +94,14 @@ export default {
 
     sortedProducts() {
       const sortedProducts = this.products.sort((product1, product2) => {
-        const sortCriterion1 = product1[this.sortOrderCategory];
-        const sortCriterion2 = product2[this.sortOrderCategory];
+        let sortCriterion1 = product1[this.sortOrderCategory];
+        let sortCriterion2 = product2[this.sortOrderCategory];
         let sortReturnNumber;
+
+        if (typeof sortCriterion1 === 'string') {
+          sortCriterion1 = sortCriterion1.trim().toLowerCase().normalize();
+          sortCriterion2 = sortCriterion2.trim().toLowerCase().normalize();
+        }
 
         if (sortCriterion1 < sortCriterion2) {
           sortReturnNumber = -1;
@@ -134,7 +129,7 @@ export default {
       const validCurrentPage = newPageOptions.find(option => option.value === this.currentPage);
 
       if (!validCurrentPage) {
-        this.currentPage = DEFAULT_CURRENT_PAGE;
+        this.currentPage = config.DEFAULT_CURRENT_PAGE;
       }
     },
   },
@@ -164,7 +159,7 @@ export default {
         return;
       }
 
-      this.addNewProduct = Object.assign({}, DEFAULT_NEW_PRODUCT);
+      this.addNewProduct = Object.assign({}, config.DEFAULT_NEW_PRODUCT);
       this.addNewProduct.id = Date.now();
       this.addNewProductMode = true;
     });
@@ -172,14 +167,6 @@ export default {
     this.events.bus.$on(this.events.names.newProductAdded, () => {
       this.addNewProductMode = false;
     });
-  },
-
-  beforeDestroy() {
-    this.events.bus.$off(this.events.names.productsPerPage);
-    this.events.bus.$off(this.events.names.currentlySelectedPage);
-    this.events.bus.$off(this.events.names.headerLabelClick);
-    this.events.bus.$off(this.events.names.clickAddProduct);
-    this.events.bus.$off(this.events.names.newProductAdded);
   },
 };
 </script>

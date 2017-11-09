@@ -20,6 +20,15 @@ class Events {
       newProductAdded: '$newProductAdded',
     };
   }
+
+  // This method is used when tearing down the app to remove event listeners
+  destroyAllGlobalListeners() {
+    const nameKeys = Object.keys(this.names);
+
+    nameKeys.forEach((key) => {
+      this.bus.$off(this.names[key]);
+    });
+  }
 }
 
 export default new Events();

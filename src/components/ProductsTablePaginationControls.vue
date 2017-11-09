@@ -33,21 +33,7 @@
 <script>
 import AppSelectDropdown from './AppSelectDropdown';
 import Events from './../event-bus';
-
-const NUM_PRODUCTS_PER_PAGE_OPTIONS = [
-  {
-    value: 5,
-    name: '5',
-  },
-  {
-    value: 10,
-    name: '10',
-  },
-  {
-    value: 15,
-    name: '15',
-  },
-];
+import config from './../config';
 
 export default {
   name: 'ProductsTablePaginationControls',
@@ -70,7 +56,7 @@ export default {
 
   data() {
     return {
-      numProductsPerPageOptions: NUM_PRODUCTS_PER_PAGE_OPTIONS,
+      numProductsPerPageOptions: config.NUM_PRODUCTS_PER_PAGE_OPTIONS,
       events: Events,
     };
   },

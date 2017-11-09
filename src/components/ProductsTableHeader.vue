@@ -9,25 +9,25 @@
     </th>
     <th
       @click="handleHeaderClick('name')" 
-      :class="{ ascending: sortOrderCategory === 'name' && sortOrderIsAscending }"
+      :class="{ ascending: shouldHaveAscendingClass('name') }"
       class="name caret">
       Name
     </th>
     <th
       @click="handleHeaderClick('type')"
-      :class="{ ascending: sortOrderCategory === 'type' && sortOrderIsAscending }" 
+      :class="{ ascending: shouldHaveAscendingClass('type') }" 
       class="center caret">
       Type
     </th>
     <th
       @click="handleHeaderClick('price')"
-      :class="{ ascending: sortOrderCategory === 'price' && sortOrderIsAscending }"
+      :class="{ ascending: shouldHaveAscendingClass('price') }"
       class="right caret">
       Price
     </th>
     <th
       @click="handleHeaderClick('inventory')"
-      :class="{ ascending: sortOrderCategory === 'inventory' && sortOrderIsAscending }"
+      :class="{ ascending: shouldHaveAscendingClass('inventory') }"
       class="right caret">
       Inventory
     </th>
@@ -58,25 +58,26 @@ export default {
 
   methods: {
     handleHeaderClick(category) {
-      let sortOrderCategory = this.sortOrderCategory;
       let sortOrderIsAscending = this.sortOrderIsAscending;
 
-      if (sortOrderCategory === category) {
+      if (this.sortOrderCategory === category) {
         sortOrderIsAscending = !sortOrderIsAscending;
       } else {
         sortOrderIsAscending = true;
       }
 
-      sortOrderCategory = category;
-
       this.events.bus.$emit(this.events.names.headerLabelClick, {
-        sortOrderCategory,
+        sortOrderCategory: category,
         sortOrderIsAscending,
       });
     },
 
     handleAllProductEdit(event) {
       this.events.bus.$emit(this.events.names.editAllProducts, event.target.checked);
+    },
+
+    shouldHaveAscendingClass(category) {
+      return (this.sortOrderCategory === category) && this.sortOrderIsAscending;
     },
   },
 };

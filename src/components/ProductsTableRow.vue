@@ -37,9 +37,15 @@
       class="error-state-container">
       To be valid, products must have:
       <ul>
-        <li v-if="!validName">a name</li>
-        <li v-if="!validPrice">a numerical price</li>
-        <li v-if="!validInventory">an inventory that is a whole number and greater than or equal to zero</li>
+        <li v-if="!validName">
+          a name
+        </li>
+        <li v-if="!validPrice">
+          a numerical price
+        </li>
+        <li v-if="!validInventory">
+          an inventory that is a whole number and greater than or equal to zero
+        </li>
       </ul>
     </div>
     <div class="product-image-thumbnail"> 
@@ -79,17 +85,7 @@
 <script>
 import AppSelectDropdown from './../components/AppSelectDropdown';
 import Events from './../event-bus';
-
-const PRODUCT_TYPE_OPTIONS = [
-  {
-    name: 'Physical',
-    value: 'Physical',
-  },
-  {
-    name: 'Digital',
-    value: 'Digital',
-  },
-];
+import config from './../config';
 
 export default {
   name: 'ProductsTableRow',
@@ -116,7 +112,7 @@ export default {
       isEditMode: false,
       editProduct: Object.assign({}, this.product),
       events: Events,
-      productTypeOptions: PRODUCT_TYPE_OPTIONS,
+      productTypeOptions: config.PRODUCT_TYPE_OPTIONS,
       validName: true,
       validPrice: true,
       validInventory: true,
@@ -154,6 +150,8 @@ export default {
   },
 
   mounted() {
+    // Listen for events fired from this product's select in the
+    // edit state. It controls the type property of the product
     this.events.bus.$on(this.productTypeEventName, (type) => {
       this.editProduct.type = type;
     });
@@ -181,7 +179,6 @@ export default {
 
   beforeDestroy() {
     this.events.bus.$off(this.productTypeEventName);
-    this.events.bus.$off(this.events.names.editAllProducts);
   },
 
   methods: {
@@ -208,6 +205,7 @@ export default {
         this.isEditMode = false;
         this.showErrorState = false;
       } else {
+        this.editMode = true;
         this.showErrorState = true;
       }
     },

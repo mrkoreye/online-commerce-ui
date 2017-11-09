@@ -41,6 +41,9 @@ import AppButton from './AppButton';
 import ProductApi from './../services/product-api';
 
 // Regex to capture word groups and use for searching
+// This allows us to match whole words out of order,
+// so searching 'dress maxi' will give the same results
+// as 'maxi dress'
 const WORD_REGEX = /\w+/g;
 
 // Regex to extract any price data (numbers prefixed with $)
@@ -109,11 +112,15 @@ export default {
   },
 
   mounted() {
+    // Fetch all products when app starts up
     this.productApi.getAllProducts().then((response) => {
       this.allProducts = response.data;
       this.isLoading = false;
     });
 
+    // Product updates are done via events that come from another component
+    // We do the updates in this component since this is where the main
+    // store of products is (the allProducts Array)
     this.events.bus.$on(this.events.names.updateProduct, (editProduct) => {
       this.isLoading = true;
       const foundProduct = this.allProducts.find(product => product.id === editProduct.id);
@@ -135,13 +142,15 @@ export default {
   },
 
   beforeDestroy() {
-    this.events.bus.$off(this.events.names.updateProduct);
+    // destroy all global app listeners when this component gets destroyed
+    this.events.destroyAllGlobalListeners();
   },
 
   methods: {
     queryMatchesName(productName) {
       if (!this.searchQueryTextData) {
-        // Return true if there is not any textData to parse
+        // Return true if there is not any textData to parse,
+        // since no search input means they want to see all products
         return true;
       }
 
@@ -159,6 +168,9 @@ export default {
 
       return this.searchQueryPriceData.every((searchPrice) => {
         const trimmedSearchPrice = searchPrice.replace('$', '');
+        // We use Math.floor here because usually when people search
+        // for they are thinking in terms of whole numbers
+        // e.g. searcf for $20, they also want things that are $20.56
         const parsedPrice = Math.floor(parseInt(trimmedSearchPrice, 10));
         const priceMatches = parsedPrice === productPriceRounded;
         return priceMatches;
