@@ -34,7 +34,8 @@
       </th>
     </tr>
     <ProductsTableRow 
-      v-for="product in productsToDisplay" 
+      v-for="(product, index) in productsToDisplay"
+      :row-number="index"
       :key="product.id" 
       :product="product" />
   </table>
